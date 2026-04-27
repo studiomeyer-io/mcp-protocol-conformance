@@ -1,6 +1,7 @@
 {
   "name": "mcp-protocol-conformance",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "mcpName": "io.studiomeyer/protocol-conformance",
   "description": "Conformance test harness for Model Context Protocol servers. Validates JSON-RPC 2.0, spec-version handshake, transport, OAuth 2.1 PKCE, tool schemas, capabilities, smoke roundtrip, and annotations against MCP spec 2024-11-05 / 2025-03-26 / 2025-06-18.",
   "type": "module",
   "main": "./dist/index.js",

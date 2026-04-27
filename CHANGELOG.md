@@ -3,6 +3,13 @@
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] — 2026-04-28
+
+### Added
+
+- `mcpName` field in `package.json` (`io.studiomeyer/protocol-conformance`)
+  so the package can be claimed and listed in the official MCP Registry.
+
 ## [0.1.0] — 2026-04-27
 
 Initial release.
