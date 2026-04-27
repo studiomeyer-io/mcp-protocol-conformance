@@ -1,0 +1,85 @@
+{
+  "name": "mcp-protocol-conformance",
+  "version": "0.1.0",
+  "description": "Conformance test harness for Model Context Protocol servers. Validates JSON-RPC 2.0, spec-version handshake, transport, OAuth 2.1 PKCE, tool schemas, capabilities, smoke roundtrip, and annotations against MCP spec 2024-11-05 / 2025-03-26 / 2025-06-18.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "mcp-conformance": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./cli": {
+      "import": "./dist/cli.js",
+      "types": "./dist/cli.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server.js",
+      "types": "./dist/server.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && chmod +x dist/server.js dist/cli.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "start": "node dist/server.js",
+    "cli": "node dist/cli.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "conformance",
+    "validator",
+    "test-harness",
+    "json-rpc",
+    "oauth",
+    "pkce"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "author": "Matthias Meyer (StudioMeyer)",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/studiomeyer-io/mcp-protocol-conformance.git"
+  },
+  "homepage": "https://github.com/studiomeyer-io/mcp-protocol-conformance#readme",
+  "bugs": {
+    "url": "https://github.com/studiomeyer-io/mcp-protocol-conformance/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ajv": "^8.12.0",
+    "commander": "^14.0.0",
+    "pkce-challenge": "^6.0.0",
+    "zod": "^3.23.0",
+    "zod-to-json-schema": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  },
+  "mcp": {
+    "supportedSpecVersions": [
+      "2024-11-05",
+      "2025-03-26",
+      "2025-06-18"
+    ]
+  }
+}
