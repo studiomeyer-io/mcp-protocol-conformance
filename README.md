@@ -1,3 +1,7 @@
+<!-- studiomeyer-mcp-stack-banner:start -->
+> **Part of the [StudioMeyer MCP Stack](https://studiomeyer.io)** — Built in Mallorca 🌴 · ⭐ if you use it
+<!-- studiomeyer-mcp-stack-banner:end -->
+
 # mcp-protocol-conformance
 
 Conformance test harness for Model Context Protocol servers. Validates JSON-RPC 2.0 wire compliance, spec-version handshake, transport behaviour, OAuth 2.1 PKCE, tool schemas, capability advertisement, smoke roundtrip, and annotation hygiene against MCP spec 2024-11-05, 2025-03-26, and 2025-06-18.
