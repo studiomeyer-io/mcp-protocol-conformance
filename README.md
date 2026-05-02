@@ -155,6 +155,10 @@ In CI:
 - MCP 2025-06-18: https://modelcontextprotocol.io/specification/2025-06-18
 - RFC 7636 (PKCE): https://datatracker.ietf.org/doc/html/rfc7636
 
+## About StudioMeyer
+
+[StudioMeyer](https://studiomeyer.io) is an AI and design studio from Palma de Mallorca, building custom websites and AI infrastructure for small and medium businesses. Production stack on Claude Agent SDK, MCP, n8n and an in-house observability and guard layer.
+
 ## License
 
 MIT — Copyright (c) 2026 Matthias Meyer (StudioMeyer)
