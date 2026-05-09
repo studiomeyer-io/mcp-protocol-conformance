@@ -4,7 +4,14 @@
 
 # mcp-protocol-conformance
 
-Conformance test harness for Model Context Protocol servers. Validates JSON-RPC 2.0 wire compliance, spec-version handshake, transport behaviour, OAuth 2.1 PKCE, tool schemas, capability advertisement, smoke roundtrip, and annotation hygiene against MCP spec 2024-11-05, 2025-03-26, and 2025-06-18.
+
+<!-- badges -->
+[![npm version](https://img.shields.io/npm/v/mcp-protocol-conformance?style=flat-square&color=cb3837&logo=npm&label=npm)](https://www.npmjs.com/package/mcp-protocol-conformance)
+[![npm downloads](https://img.shields.io/npm/dm/mcp-protocol-conformance?style=flat-square&color=cb3837&logo=npm&label=installs%2Fmo)](https://www.npmjs.com/package/mcp-protocol-conformance)
+![License](https://img.shields.io/github/license/studiomeyer-io/mcp-protocol-conformance?style=flat-square&color=22c55e&label=license)
+![Last commit](https://img.shields.io/github/last-commit/studiomeyer-io/mcp-protocol-conformance?style=flat-square&color=88c0d0&label=updated)
+![GitHub stars](https://img.shields.io/github/stars/studiomeyer-io/mcp-protocol-conformance?style=flat-square&color=ffd700&logo=github&label=stars)
+<!-- /badges -->Conformance test harness for Model Context Protocol servers. Validates JSON-RPC 2.0 wire compliance, spec-version handshake, transport behaviour, OAuth 2.1 PKCE, tool schemas, capability advertisement, smoke roundtrip, and annotation hygiene against MCP spec 2024-11-05, 2025-03-26, and 2025-06-18.
 
 This is a Foundation build of the StudioMeyer MCP Factory: every other Factory build runs through this harness before promotion (npm publish, marketplace submit, upstream PR).
 
