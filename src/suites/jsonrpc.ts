@@ -31,7 +31,7 @@ function isError(
 
 export async function runJsonRpcCompliance(
   target: ServerTarget,
-  _specVersion: SpecVersion,
+  specVersion: SpecVersion,
 ): Promise<ComplianceReport> {
   const runner = makeSuiteRunner("jsonrpc");
   runner.start();
@@ -44,7 +44,7 @@ export async function runJsonRpcCompliance(
     // memory.studiomeyer.io v3.16.7 in real-tenant smoke). Doing the
     // handshake first makes the JSON-RPC error-code matrix observable on
     // strict-init servers without changing the meaning of the checks.
-    await initializeAdapter(adapter);
+    await initializeAdapter(adapter, specVersion);
 
     // 1. method-not-found → -32601
     {

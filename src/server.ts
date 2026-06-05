@@ -153,7 +153,7 @@ const TOOL_DESCRIPTORS = [
 // Tool implementations (one switch per name; pure dispatch)
 // ---------------------------------------------------------------------------
 
-async function dispatchTool(
+export async function dispatchTool(
   name: string,
   rawArgs: unknown,
 ): Promise<unknown> {
@@ -168,32 +168,40 @@ async function dispatchTool(
     }
     case "runTransportSuite": {
       const args = RunTransportSuiteArgs.parse(rawArgs);
-      return runTransportSuite(args.target, args.transport);
+      return runTransportSuite(args.target, args.transport, args.specVersion);
     }
     case "runOauthPkceFlow": {
       const args = RunOauthPkceFlowArgs.parse(rawArgs);
-      return runOauthPkceFlow(args.target, {
-        mode: "mock",
-        clientId: args.clientId,
-        redirectUri: args.redirectUri,
-        scopes: args.scopes,
-      });
+      return runOauthPkceFlow(
+        args.target,
+        {
+          mode: "mock",
+          clientId: args.clientId,
+          redirectUri: args.redirectUri,
+          scopes: args.scopes,
+        },
+        args.specVersion,
+      );
     }
     case "runToolSchemaValidation": {
       const args = RunToolSchemaValidationArgs.parse(rawArgs);
-      return runToolSchemaValidation(args.target, args.expectedManifest);
+      return runToolSchemaValidation(
+        args.target,
+        args.expectedManifest,
+        args.specVersion,
+      );
     }
     case "runCapabilityIntrospection": {
       const args = RunCapabilityIntrospectionArgs.parse(rawArgs);
-      return runCapabilityIntrospection(args.target);
+      return runCapabilityIntrospection(args.target, args.specVersion);
     }
     case "runRoundtripSmoke": {
       const args = RunRoundtripSmokeArgs.parse(rawArgs);
-      return runRoundtripSmoke(args.target, args.sampleArgs);
+      return runRoundtripSmoke(args.target, args.sampleArgs, args.specVersion);
     }
     case "runAnnotationsAudit": {
       const args = RunAnnotationsAuditArgs.parse(rawArgs);
-      return runAnnotationsAudit(args.target);
+      return runAnnotationsAudit(args.target, args.specVersion);
     }
     case "runFullSuite": {
       const args = RunFullSuiteArgs.parse(rawArgs);

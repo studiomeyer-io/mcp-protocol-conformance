@@ -9,6 +9,7 @@
 
 import type {
   ServerTarget,
+  SpecVersion,
   TransportReport,
 } from "../types.js";
 import { createTargetAdapter } from "../targets/index.js";
@@ -19,6 +20,7 @@ import { makeSuiteRunner } from "./util.js";
 export async function runTransportSuite(
   target: ServerTarget,
   transport: "stdio" | "http" | "both" = "both",
+  specVersion: SpecVersion = "2025-06-18",
 ): Promise<TransportReport> {
   const runner = makeSuiteRunner("transport");
   runner.start();
@@ -74,7 +76,7 @@ export async function runTransportSuite(
       // We need an initialize first to allocate session-id
       const initStart = Date.now();
       const initRes = await httpAdapter.request("initialize", {
-        protocolVersion: "2025-06-18",
+        protocolVersion: specVersion,
         capabilities: {},
         clientInfo: { name: "mcp-protocol-conformance", version: "0.1.0" },
       });

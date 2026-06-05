@@ -9,6 +9,7 @@
 import type {
   AnnotationsReport,
   ServerTarget,
+  SpecVersion,
   ToolDescriptor,
 } from "../types.js";
 import { ToolDescriptorSchema } from "../types.js";
@@ -24,6 +25,7 @@ interface ToolsListResult {
 
 export async function runAnnotationsAudit(
   target: ServerTarget,
+  specVersion: SpecVersion = "2025-06-18",
 ): Promise<AnnotationsReport> {
   const runner = makeSuiteRunner("annotations");
   runner.start();
@@ -31,7 +33,7 @@ export async function runAnnotationsAudit(
 
   try {
     await adapter.open();
-    await initializeAdapter(adapter);
+    await initializeAdapter(adapter, specVersion);
 
     const list = await adapter.request<ToolsListResult>("tools/list");
     if (isJsonRpcError(list)) {

@@ -11,6 +11,7 @@
 import type {
   ServerTarget,
   SmokeReport,
+  SpecVersion,
   ToolDescriptor,
 } from "../types.js";
 import { ToolDescriptorSchema } from "../types.js";
@@ -31,6 +32,7 @@ interface ToolCallResult {
 export async function runRoundtripSmoke(
   target: ServerTarget,
   sampleArgs?: Record<string, unknown>,
+  specVersion: SpecVersion = "2025-06-18",
 ): Promise<SmokeReport> {
   const runner = makeSuiteRunner("smoke");
   runner.start();
@@ -38,7 +40,7 @@ export async function runRoundtripSmoke(
 
   try {
     await adapter.open();
-    await initializeAdapter(adapter);
+    await initializeAdapter(adapter, specVersion);
 
     const list = await adapter.request<ToolsListResult>("tools/list");
     if (isJsonRpcError(list)) {

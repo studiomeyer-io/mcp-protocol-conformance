@@ -6,6 +6,7 @@ import {
   runJsonRpcCompliance,
   runSpecVersionAssertion,
   runToolSchemaValidation,
+  runCapabilityIntrospection,
   runRoundtripSmoke,
   runAnnotationsAudit,
   runFullSuite,
@@ -15,6 +16,7 @@ import type { ServerTarget } from "../src/types.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ECHO = resolve(__dirname, "fixtures", "echo-server.mjs");
 const BROKEN = resolve(__dirname, "fixtures", "broken-server.mjs");
+const MCP2511 = resolve(__dirname, "fixtures", "mcp2511-server.mjs");
 
 const ECHO_TARGET: ServerTarget = {
   kind: "stdio",
@@ -25,6 +27,11 @@ const BROKEN_TARGET: ServerTarget = {
   kind: "stdio",
   cmd: process.execPath,
   args: [BROKEN],
+};
+const MCP2511_TARGET: ServerTarget = {
+  kind: "stdio",
+  cmd: process.execPath,
+  args: [MCP2511],
 };
 
 describe("echo-server: positive integration", () => {
@@ -91,6 +98,68 @@ describe("broken-server: negative integration", () => {
       (c) => c.id === "jsonrpc-method-not-found",
     );
     expect(mnfCheck?.status).toBe("fail");
+  }, 15_000);
+});
+
+describe("mcp2511-server: 2025-11-25 surface checks", () => {
+  it("capability suite confirms tasks advertisement is consistent", async () => {
+    const report = await runCapabilityIntrospection(MCP2511_TARGET, "2025-11-25");
+    const tasksCheck = report.checks.find(
+      (c) => c.id === "capability-tasks-consistent",
+    );
+    expect(tasksCheck?.status).toBe("pass");
+  }, 15_000);
+
+  it("schema suite warns on a tool that omits the 2025-11-25 title", async () => {
+    const report = await runToolSchemaValidation(
+      MCP2511_TARGET,
+      undefined,
+      "2025-11-25",
+    );
+    const titleWarn = report.checks.find(
+      (c) => c.id === "schema-title-ping_tool",
+    );
+    expect(titleWarn?.status).toBe("warn");
+  }, 15_000);
+
+  it("schema suite fails a non-object outputSchema", async () => {
+    const report = await runToolSchemaValidation(
+      MCP2511_TARGET,
+      undefined,
+      "2025-11-25",
+    );
+    const outFail = report.checks.find(
+      (c) => c.id === "schema-output-broken_out",
+    );
+    expect(outFail?.status).toBe("fail");
+  }, 15_000);
+
+  it("schema suite passes a valid outputSchema", async () => {
+    const report = await runToolSchemaValidation(
+      MCP2511_TARGET,
+      undefined,
+      "2025-11-25",
+    );
+    const outPass = report.checks.find((c) => c.id === "schema-output-search");
+    expect(outPass?.status).toBe("pass");
+  }, 15_000);
+
+  it("emits NO tasks/title/output checks when run as 2025-06-18 (additive)", async () => {
+    const cap = await runCapabilityIntrospection(MCP2511_TARGET, "2025-06-18");
+    expect(
+      cap.checks.find((c) => c.id === "capability-tasks-consistent"),
+    ).toBeUndefined();
+    const schema = await runToolSchemaValidation(
+      MCP2511_TARGET,
+      undefined,
+      "2025-06-18",
+    );
+    expect(
+      schema.checks.some(
+        (c) =>
+          c.id.startsWith("schema-title-") || c.id.startsWith("schema-output-"),
+      ),
+    ).toBe(false);
   }, 15_000);
 });
 

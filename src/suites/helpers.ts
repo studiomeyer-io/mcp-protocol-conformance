@@ -4,10 +4,11 @@
  */
 
 import type { TargetAdapter } from "../targets/types.js";
+import type { SpecVersion } from "../types.js";
 
 export async function initializeAdapter(
   adapter: TargetAdapter,
-  protocolVersion: string = "2025-06-18",
+  protocolVersion: SpecVersion = "2025-06-18",
 ): Promise<void> {
   await adapter.request("initialize", {
     protocolVersion,

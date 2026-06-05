@@ -9,10 +9,12 @@
 import type {
   CapabilityReport,
   ServerTarget,
+  SpecVersion,
 } from "../types.js";
 import { createTargetAdapter } from "../targets/index.js";
 import { isJsonRpcError } from "../targets/types.js";
 import { makeSuiteRunner } from "./util.js";
+import { getSpec } from "../specs/index.js";
 
 interface InitResult {
   capabilities?: Record<string, unknown>;
@@ -20,15 +22,17 @@ interface InitResult {
 
 export async function runCapabilityIntrospection(
   target: ServerTarget,
+  specVersion: SpecVersion = "2025-06-18",
 ): Promise<CapabilityReport> {
   const runner = makeSuiteRunner("capability");
   runner.start();
   const adapter = createTargetAdapter(target);
+  const spec = getSpec(specVersion);
 
   try {
     await adapter.open();
     const initRes = await adapter.request<InitResult>("initialize", {
-      protocolVersion: "2025-06-18",
+      protocolVersion: specVersion,
       capabilities: {},
       clientInfo: { name: "mcp-protocol-conformance", version: "0.1.0" },
     });
@@ -40,7 +44,14 @@ export async function runCapabilityIntrospection(
     runner.add({
       id: "capability-initialize",
       description: "Server returns capabilities object on initialize",
-      status: isJsonRpcError(initRes) ? "fail" : "pass",
+      // A rejected initialize is usually a protocol-version mismatch (the version
+      // suite is the authority on that), not a capability defect — warn + skip the
+      // probes instead of hard-failing the whole capability suite on a strict
+      // server that does not accept the requested specVersion.
+      status: isJsonRpcError(initRes) ? "warn" : "pass",
+      message: isJsonRpcError(initRes)
+        ? `initialize rejected for protocolVersion ${specVersion} (${initRes.error.code} ${initRes.error.message}). See the version suite.`
+        : undefined,
       details: { capabilities: advertisedCaps },
     });
 
@@ -60,6 +71,15 @@ export async function runCapabilityIntrospection(
       { method: "resources/list", capability: "resources" },
       { method: "prompts/list", capability: "prompts" },
     ];
+
+    // 2025-11-25: experimental durable requests. Probe only tasks/list — get/
+    // result/cancel need a live taskId a read-only harness can't supply. Like the
+    // tools/resources/prompts probes this checks capability/responsiveness
+    // consistency, not response-payload shape (only probed when the spec defines
+    // tasks, so older specs are unaffected).
+    if (spec.tasks?.supported) {
+      probes.push({ method: "tasks/list", capability: "tasks" });
+    }
 
     for (const probe of probes) {
       const res = await adapter.request(probe.method);

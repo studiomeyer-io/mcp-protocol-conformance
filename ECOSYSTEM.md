@@ -34,7 +34,7 @@ just happen to compose well.
 This package is the **acceptance test**: every other StudioMeyer MCP build runs
 through it before promotion (npm publish, marketplace submit, upstream PR). It
 is also a generic harness — point it at any MCP server (yours or someone
-else's), pick a spec version (`2024-11-05`, `2025-03-26`, `2025-06-18`), and
+else's), pick a spec version (`2024-11-05`, `2025-03-26`, `2025-06-18`, `2025-11-25`), and
 get a JSON / JUnit / SARIF report on JSON-RPC compliance, OAuth 2.1 PKCE
 behaviour, tool-schema validity, capability advertisement, smoke roundtrip,
 and annotation hygiene.

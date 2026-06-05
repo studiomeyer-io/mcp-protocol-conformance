@@ -13,6 +13,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { Command } from "commander";
 import {
   SUITE_NAMES,
+  SUPPORTED_SPEC_VERSIONS,
   type FullReport,
   type ServerTarget,
   type SpecVersion,
@@ -72,7 +73,7 @@ program
   .option("--header <kv...>", "HTTP header in K:V form (repeatable)")
   .requiredOption(
     "--spec <version>",
-    "MCP spec version: 2024-11-05 | 2025-03-26 | 2025-06-18",
+    "MCP spec version: 2024-11-05 | 2025-03-26 | 2025-06-18 | 2025-11-25",
   )
   .option(
     "--suite <suites>",
@@ -212,10 +213,12 @@ function parseTarget(opts: {
 }
 
 function parseSpec(s: string): SpecVersion {
-  if (s === "2024-11-05" || s === "2025-03-26" || s === "2025-06-18") {
-    return s;
+  if ((SUPPORTED_SPEC_VERSIONS as ReadonlyArray<string>).includes(s)) {
+    return s as SpecVersion;
   }
-  throw new Error(`Unknown spec version: ${s}`);
+  throw new Error(
+    `Unknown spec version: ${s}. Supported: ${SUPPORTED_SPEC_VERSIONS.join(", ")}`,
+  );
 }
 
 function parseSuiteSelector(s: string): SuiteSelector {

@@ -76,20 +76,20 @@ async function runOneSuite(
     case "version":
       return runSpecVersionAssertion(target, specVersion);
     case "transport":
-      return runTransportSuite(target, "both");
+      return runTransportSuite(target, "both", specVersion);
     case "oauth":
       if (target.kind !== "http") {
         return skipped(suite, "OAuth suite only applies to HTTP targets");
       }
-      return runOauthPkceFlow(target, options.oauth ?? { mode: "mock" });
+      return runOauthPkceFlow(target, options.oauth ?? { mode: "mock" }, specVersion);
     case "schema":
-      return runToolSchemaValidation(target);
+      return runToolSchemaValidation(target, undefined, specVersion);
     case "capability":
-      return runCapabilityIntrospection(target);
+      return runCapabilityIntrospection(target, specVersion);
     case "smoke":
-      return runRoundtripSmoke(target);
+      return runRoundtripSmoke(target, undefined, specVersion);
     case "annotations":
-      return runAnnotationsAudit(target);
+      return runAnnotationsAudit(target, specVersion);
   }
 }
 

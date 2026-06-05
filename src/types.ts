@@ -16,6 +16,7 @@ export const SpecVersionSchema = z.enum([
   "2024-11-05",
   "2025-03-26",
   "2025-06-18",
+  "2025-11-25",
 ]);
 export type SpecVersion = z.infer<typeof SpecVersionSchema>;
 
@@ -23,6 +24,7 @@ export const SUPPORTED_SPEC_VERSIONS: ReadonlyArray<SpecVersion> = [
   "2024-11-05",
   "2025-03-26",
   "2025-06-18",
+  "2025-11-25",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -95,8 +97,18 @@ export type SuiteSelector = z.infer<typeof SuiteSelectorSchema>;
 
 export const ToolDescriptorSchema = z.object({
   name: z.string(),
+  // 2025-11-25: human-readable display name distinct from the programmatic `name`.
+  title: z.string().optional(),
   description: z.string().optional(),
   inputSchema: z.unknown().optional(),
+  // 2025-11-25: structured tool output schema.
+  outputSchema: z.unknown().optional(),
+  // 2025-11-25: sized icons for UI display (png/jpeg/svg+xml/webp).
+  icons: z.array(z.unknown()).optional(),
+  // 2025-11-25: execution-related properties.
+  execution: z.unknown().optional(),
+  // 2025-11-25: arbitrary tool metadata.
+  _meta: z.record(z.unknown()).optional(),
   annotations: z
     .object({
       readOnlyHint: z.boolean().optional(),
@@ -220,6 +232,7 @@ export type RunSpecVersionAssertionArgs = z.infer<
 export const RunTransportSuiteArgs = z.object({
   target: ServerTargetSchema,
   transport: z.enum(["stdio", "http", "both"]).default("both"),
+  specVersion: SpecVersionSchema.default("2025-06-18"),
 });
 export type RunTransportSuiteArgs = z.infer<typeof RunTransportSuiteArgs>;
 
@@ -229,12 +242,14 @@ export const RunOauthPkceFlowArgs = z.object({
   redirectUri: z.string().url(),
   scopes: z.array(z.string()).optional(),
   authorizationServerUrl: z.string().url().optional(),
+  specVersion: SpecVersionSchema.default("2025-06-18"),
 });
 export type RunOauthPkceFlowArgs = z.infer<typeof RunOauthPkceFlowArgs>;
 
 export const RunToolSchemaValidationArgs = z.object({
   target: ServerTargetSchema,
   expectedManifest: ToolManifestSchema.optional(),
+  specVersion: SpecVersionSchema.default("2025-06-18"),
 });
 export type RunToolSchemaValidationArgs = z.infer<
   typeof RunToolSchemaValidationArgs
@@ -242,6 +257,7 @@ export type RunToolSchemaValidationArgs = z.infer<
 
 export const RunCapabilityIntrospectionArgs = z.object({
   target: ServerTargetSchema,
+  specVersion: SpecVersionSchema.default("2025-06-18"),
 });
 export type RunCapabilityIntrospectionArgs = z.infer<
   typeof RunCapabilityIntrospectionArgs
@@ -250,11 +266,13 @@ export type RunCapabilityIntrospectionArgs = z.infer<
 export const RunRoundtripSmokeArgs = z.object({
   target: ServerTargetSchema,
   sampleArgs: z.record(z.unknown()).optional(),
+  specVersion: SpecVersionSchema.default("2025-06-18"),
 });
 export type RunRoundtripSmokeArgs = z.infer<typeof RunRoundtripSmokeArgs>;
 
 export const RunAnnotationsAuditArgs = z.object({
   target: ServerTargetSchema,
+  specVersion: SpecVersionSchema.default("2025-06-18"),
 });
 export type RunAnnotationsAuditArgs = z.infer<typeof RunAnnotationsAuditArgs>;
 

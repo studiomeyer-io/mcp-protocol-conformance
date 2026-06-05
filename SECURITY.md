@@ -16,13 +16,16 @@ servers other than your own.
   command execution.
 - Spec misinterpretations that would let a non-conformant MCP server pass
   the harness as conformant.
+- Bypasses of the 64 KB schema-size guard that let an adversarial
+  server-supplied `inputSchema` / `outputSchema` reach `ajv.compile` and
+  exhaust CPU in the harness process.
 - Mock authorization server (`src/test-fixtures/mock-as.ts`) flaws that
   could be exploited if the file is reused outside its CI-fixture role.
 
 ## Out of scope
 
-- Denial-of-service through giant target servers — outputs are streamed and
-  caps are configurable.
+- Denial-of-service through giant target-server *responses* — outputs are
+  streamed (the schema-compile path itself is guarded; see Scope).
 - Breakage of older spec versions (`2024-11-05`) due to upstream MCP-spec
   errata; we follow the published spec text.
 

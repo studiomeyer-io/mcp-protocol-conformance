@@ -16,6 +16,7 @@ import pkceChallenge from "pkce-challenge";
 import type {
   HttpTarget,
   OauthReport,
+  SpecVersion,
 } from "../types.js";
 import { makeSuiteRunner } from "./util.js";
 import { createTargetAdapter } from "../targets/index.js";
@@ -33,6 +34,7 @@ export interface OauthRunOptions {
 export async function runOauthPkceFlow(
   target: HttpTarget,
   options: OauthRunOptions,
+  specVersion: SpecVersion = "2025-06-18",
 ): Promise<OauthReport> {
   const runner = makeSuiteRunner("oauth");
   runner.start();
@@ -85,7 +87,7 @@ export async function runOauthPkceFlow(
     try {
       await adapter.open();
       const res = await adapter.request("initialize", {
-        protocolVersion: "2025-06-18",
+        protocolVersion: specVersion,
         capabilities: {},
         clientInfo: { name: "mcp-protocol-conformance", version: "0.1.0" },
       });

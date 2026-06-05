@@ -11,7 +11,7 @@
 ![License](https://img.shields.io/github/license/studiomeyer-io/mcp-protocol-conformance?style=flat-square&color=22c55e&label=license)
 ![Last commit](https://img.shields.io/github/last-commit/studiomeyer-io/mcp-protocol-conformance?style=flat-square&color=88c0d0&label=updated)
 ![GitHub stars](https://img.shields.io/github/stars/studiomeyer-io/mcp-protocol-conformance?style=flat-square&color=ffd700&logo=github&label=stars)
-<!-- /badges -->Conformance test harness for Model Context Protocol servers. Validates JSON-RPC 2.0 wire compliance, spec-version handshake, transport behaviour, OAuth 2.1 PKCE, tool schemas, capability advertisement, smoke roundtrip, and annotation hygiene against MCP spec 2024-11-05, 2025-03-26, and 2025-06-18.
+<!-- /badges -->Conformance test harness for Model Context Protocol servers. Validates JSON-RPC 2.0 wire compliance, spec-version handshake, transport behaviour, OAuth 2.1 PKCE, tool schemas, capability advertisement, smoke roundtrip, and annotation hygiene against MCP spec 2024-11-05, 2025-03-26, 2025-06-18, and the current **stable** revision **2025-11-25** (experimental `tasks`, structured tool output, JSON Schema 2020-12 default, tool `title`/`icons`).
 
 This is a Foundation build of the StudioMeyer MCP Factory: every other Factory build runs through this harness before promotion (npm publish, marketplace submit, upstream PR).
 
@@ -118,8 +118,8 @@ Tools (all read-only, all `destructiveHint: false`):
 | 2 | `runSpecVersionAssertion` | Verify advertised protocolVersion |
 | 3 | `runTransportSuite` | Transport-layer ping + session-id |
 | 4 | `runOauthPkceFlow` | OAuth 2.1 PKCE S256 (mock-AS or real-tenant) |
-| 5 | `runToolSchemaValidation` | inputSchema is valid JSON-Schema |
-| 6 | `runCapabilityIntrospection` | initialize.capabilities matches behaviour |
+| 5 | `runToolSchemaValidation` | inputSchema (+ 2025-11-25 outputSchema / title) is valid JSON-Schema |
+| 6 | `runCapabilityIntrospection` | initialize.capabilities matches behaviour (+ 2025-11-25 tasks) |
 | 7 | `runRoundtripSmoke` | One tools/call per advertised tool |
 | 8 | `runAnnotationsAudit` | readOnlyHint / destructiveHint hygiene |
 | 9 | `runFullSuite` | All suites + summary |
@@ -129,22 +129,28 @@ Tools (all read-only, all `destructiveHint: false`):
 
 ## Compatibility matrix
 
-|                    | 2024-11-05 | 2025-03-26 | 2025-06-18 |
-|--------------------|:----------:|:----------:|:----------:|
-| jsonrpc            | yes        | yes        | yes        |
-| version (handshake)| yes        | yes        | yes        |
-| transport (stdio)  | yes        | yes        | yes        |
-| transport (http)   | n/a        | yes        | yes        |
-| oauth (mock)       | n/a        | yes        | yes        |
-| oauth (real)       | n/a        | yes        | yes        |
-| schema             | yes        | yes        | yes        |
-| capability         | yes        | yes        | yes        |
-| smoke              | yes        | yes        | yes        |
-| annotations        | warn-only  | warn-only  | yes        |
+|                     | 2024-11-05 | 2025-03-26 | 2025-06-18 | 2025-11-25 |
+|---------------------|:----------:|:----------:|:----------:|:----------:|
+| jsonrpc             | yes        | yes        | yes        | yes        |
+| version (handshake) | yes        | yes        | yes        | yes        |
+| transport (stdio)   | yes        | yes        | yes        | yes        |
+| transport (http)    | n/a        | yes        | yes        | yes        |
+| oauth (mock)        | n/a        | yes        | yes        | yes        |
+| oauth (real)        | n/a        | yes        | yes        | yes        |
+| schema              | yes        | yes        | yes        | yes        |
+| capability          | yes        | yes        | yes        | yes        |
+| smoke               | yes        | yes        | yes        | yes        |
+| annotations         | warn-only  | warn-only  | yes        | yes        |
+| tasks (capability)  | n/a        | n/a        | n/a        | yes        |
+| tool title/output   | n/a        | n/a        | n/a        | warn-only  |
 
 `yes` = suite runs and produces actionable results.
 `n/a` = capability not in spec; suite skips automatically.
 `warn-only` = suite runs but the spec does not formally require the feature.
+
+The 2026-07-28 RC (stateless core, SEP-2575/2567) is intentionally **not** here —
+it ships final on 2026-07-28; conformance for it lands in a later release against
+the final SDK.
 
 ## Integration in Factory builds
 
@@ -170,6 +176,7 @@ In CI:
 - MCP 2024-11-05: https://modelcontextprotocol.io/specification/2024-11-05
 - MCP 2025-03-26: https://modelcontextprotocol.io/specification/2025-03-26
 - MCP 2025-06-18: https://modelcontextprotocol.io/specification/2025-06-18
+- MCP 2025-11-25: https://modelcontextprotocol.io/specification/2025-11-25
 - RFC 7636 (PKCE): https://datatracker.ietf.org/doc/html/rfc7636
 
 ## About StudioMeyer
