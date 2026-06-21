@@ -3,6 +3,40 @@
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] — 2026-06-21
+
+### Fixed
+
+- **Correctness:** `isJsonRpcError()` no longer misclassifies a
+  `{ jsonrpc, id, result, error: null }` response as an error. JSON-RPC 2.0 and
+  the MCP `Error` interface require an error response to carry an `error`
+  member that is an object with a numeric `code`; a success response carries
+  `result` and omits `error`. The previous `"error" in response` check turned
+  a passing roundtrip into a spurious FAIL/WARN against the (common) servers
+  that always serialise an `error: null` default — affecting the smoke, schema,
+  capability and version suites. The helper now matches the wire contract and
+  the HTTP adapter's own envelope detection. This is a check-accuracy fix: a
+  wrong verdict here is worse than a missing check.
+
+### Added
+
+- `jsonrpc` suite gains a `jsonrpc-response-envelope` check enforcing
+  JSON-RPC 2.0 §5 — a response must contain exactly one of `result`/`error`.
+  It FAILs on `{ result, error: {…} }` (forbidden), WARNs on a hybrid
+  `{ result, error: null }` success envelope (tolerated but non-strict) and on
+  an empty envelope. No prior suite caught this.
+- Test coverage: `tests/jsonrpc-helpers.test.ts` (10 cases pinning the
+  `isJsonRpcError` edge cases) + a `hybrid-envelope-server.mjs` fixture and
+  four integration tests proving the hybrid `error: null` shape is treated as
+  success by smoke/schema yet warned by the envelope check. 110 → 124 tests.
+
+### Changed
+
+- Migrated `vitest.config.ts` off the removed-in-Vitest-4 nested
+  `poolOptions.forks.singleFork` to the top-level `pool: "forks"` +
+  `fileParallelism: false`, clearing the deprecation warning while keeping
+  serial-per-file execution for the stdio/HTTP suites.
+
 ## [0.2.0] — 2026-06-06
 
 ### Added

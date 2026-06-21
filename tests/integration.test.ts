@@ -34,6 +34,13 @@ const MCP2511_TARGET: ServerTarget = {
   args: [MCP2511],
 };
 
+const HYBRID = resolve(__dirname, "fixtures", "hybrid-envelope-server.mjs");
+const HYBRID_TARGET: ServerTarget = {
+  kind: "stdio",
+  cmd: process.execPath,
+  args: [HYBRID],
+};
+
 describe("echo-server: positive integration", () => {
   it("passes JSON-RPC compliance suite", async () => {
     const report = await runJsonRpcCompliance(ECHO_TARGET, "2025-06-18");
@@ -161,6 +168,40 @@ describe("mcp2511-server: 2025-11-25 surface checks", () => {
       ),
     ).toBe(false);
   }, 15_000);
+});
+
+describe("jsonrpc suite: response-envelope conformance (JSON-RPC 2.0 §5)", () => {
+  it("passes the envelope check against a clean result-only server", async () => {
+    const report = await runJsonRpcCompliance(ECHO_TARGET, "2025-06-18");
+    const env = report.checks.find((c) => c.id === "jsonrpc-response-envelope");
+    expect(env?.status).toBe("pass");
+  }, 15_000);
+
+  it("warns on a hybrid { result, error: null } success envelope", async () => {
+    const report = await runJsonRpcCompliance(HYBRID_TARGET, "2025-06-18");
+    const env = report.checks.find((c) => c.id === "jsonrpc-response-envelope");
+    expect(env?.status).toBe("warn");
+    expect(env?.message ?? "").toMatch(/null/i);
+  }, 15_000);
+
+  it("does NOT spuriously fail a hybrid-envelope server's method-not-found probe", async () => {
+    // Regression guard: with the loose isJsonRpcError, { result, error: null }
+    // on success leaked into error-classification. The method-not-found check
+    // must still see the real -32601 error envelope and pass.
+    const report = await runJsonRpcCompliance(HYBRID_TARGET, "2025-06-18");
+    const mnf = report.checks.find((c) => c.id === "jsonrpc-method-not-found");
+    expect(mnf?.status).toBe("pass");
+  }, 15_000);
+
+  it("smoke + schema treat a hybrid-envelope tool result as success, not error", async () => {
+    // The whole point of the isJsonRpcError fix: a server that always serialises
+    // error:null must not have its valid tool roundtrip mis-reported as an error.
+    const schema = await runToolSchemaValidation(HYBRID_TARGET, undefined, "2025-06-18");
+    expect(schema.status).not.toBe("fail");
+    const smoke = await runRoundtripSmoke(HYBRID_TARGET, undefined, "2025-06-18");
+    const echo = smoke.checks.find((c) => c.id === "smoke-echo");
+    expect(echo?.status).toBe("pass");
+  }, 20_000);
 });
 
 beforeAll(() => {
