@@ -61,6 +61,59 @@ export async function runJsonRpcCompliance(
       });
     }
 
+    // 1b. response-envelope mutual exclusivity → JSON-RPC 2.0 §5.
+    //     A response object MUST contain either `result` or `error`, never
+    //     both and never neither. `ping` is the cheapest required method to
+    //     probe a well-formed *success* envelope; the method-not-found probe
+    //     above already exercised a well-formed *error* envelope. Servers that
+    //     emit `{ result, error: null }` (a common serialiser default) or
+    //     `{ result, error: {...} }` (a real bug) are flagged here — no other
+    //     suite catches this, and the harness's own isJsonRpcError() narrows
+    //     such hybrids to "not an error", so without this check the violation
+    //     would pass silently.
+    {
+      const start = Date.now();
+      const ping = (await adapter.request("ping")) as unknown as Record<
+        string,
+        unknown
+      >;
+      const hasResult = "result" in ping && ping["result"] !== undefined;
+      const errVal = ping["error"];
+      const hasRealError =
+        errVal !== undefined &&
+        errVal !== null &&
+        typeof errVal === "object" &&
+        typeof (errVal as { code?: unknown }).code === "number";
+      const hasNullishError = "error" in ping && !hasRealError;
+      let status: "pass" | "fail" | "warn";
+      let message: string | undefined;
+      if (hasResult && hasRealError) {
+        status = "fail";
+        message =
+          "Response carries both 'result' and a real 'error' object — JSON-RPC 2.0 forbids both in one response.";
+      } else if (!hasResult && !hasRealError) {
+        // ping not implemented (optional pre-2025-03-26) surfaces as an error
+        // envelope, which is fine; a truly empty envelope is the violation.
+        status = "warn";
+        message =
+          "ping response carries neither a 'result' nor a valid 'error' object — empty JSON-RPC envelope.";
+      } else if (hasResult && hasNullishError) {
+        status = "warn";
+        message =
+          "Response carries 'result' alongside a null/!code 'error' field. Tolerated by this harness, but a strict JSON-RPC 2.0 success response should omit 'error' entirely.";
+      } else {
+        status = "pass";
+      }
+      runner.add({
+        id: "jsonrpc-response-envelope",
+        description:
+          "Response contains exactly one of result/error (JSON-RPC 2.0 §5)",
+        status,
+        message,
+        durationMs: Date.now() - start,
+      });
+    }
+
     // 2. invalid-params → -32602 (call tools/call with wrong shape)
     {
       const start = Date.now();

@@ -114,7 +114,7 @@ Tools (all read-only, all `destructiveHint: false`):
 
 | # | Tool | Purpose |
 |---|------|---------|
-| 1 | `runJsonRpcCompliance` | JSON-RPC 2.0 error-code suite |
+| 1 | `runJsonRpcCompliance` | JSON-RPC 2.0 error-code matrix + response-envelope (result/error mutual exclusivity) |
 | 2 | `runSpecVersionAssertion` | Verify advertised protocolVersion |
 | 3 | `runTransportSuite` | Transport-layer ping + session-id |
 | 4 | `runOauthPkceFlow` | OAuth 2.1 PKCE S256 (mock-AS or real-tenant) |
