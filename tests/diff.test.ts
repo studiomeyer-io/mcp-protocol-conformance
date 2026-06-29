@@ -58,6 +58,50 @@ describe("compareManifests", () => {
     expect(diff.changed[0]!.differences).toContain("inputSchema differs");
   });
 
+  it("flags changed 2025-11-25 tool descriptor fields", () => {
+    const expected: ToolManifest = {
+      tools: [
+        {
+          name: "search",
+          title: "Search",
+          description: "Search documents",
+          inputSchema: { type: "object" },
+          outputSchema: {
+            type: "object",
+            properties: { hits: { type: "array" } },
+          },
+          icons: [{ src: "icon.svg", sizes: "32x32" }],
+          execution: { mode: "async" },
+          _meta: { source: "fixture" },
+        },
+      ],
+    };
+    const actual: ToolManifest = {
+      tools: [
+        {
+          ...expected.tools[0]!,
+          title: "Search Documents",
+          outputSchema: {
+            type: "object",
+            properties: { results: { type: "array" } },
+          },
+          icons: [{ src: "icon.svg", sizes: "64x64" }],
+          execution: { mode: "sync" },
+          _meta: { source: "updated" },
+        },
+      ],
+    };
+    const diff = compareManifests(expected, actual);
+    expect(diff.changed).toHaveLength(1);
+    expect(diff.changed[0]!.differences).toEqual([
+      "title differs",
+      "outputSchema differs",
+      "icons differ",
+      "execution differs",
+      "_meta differs",
+    ]);
+  });
+
   // F2 Round 2 fix: key-order in input schemas must NOT register as "changed"
   it("ignores key-order differences in inputSchema (F2 Round 2)", () => {
     const expected: ToolManifest = {
