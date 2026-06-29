@@ -65,8 +65,23 @@ export function compareManifests(
     if ((et.description ?? "") !== (at.description ?? "")) {
       diffs.push("description differs");
     }
+    if ((et.title ?? "") !== (at.title ?? "")) {
+      diffs.push("title differs");
+    }
     if (canonicalize(et.annotations ?? {}) !== canonicalize(at.annotations ?? {})) {
       diffs.push("annotations differ");
+    }
+    if (canonicalize(et.outputSchema ?? {}) !== canonicalize(at.outputSchema ?? {})) {
+      diffs.push("outputSchema differs");
+    }
+    if (canonicalize(et.icons ?? []) !== canonicalize(at.icons ?? [])) {
+      diffs.push("icons differ");
+    }
+    if (canonicalize(et.execution ?? {}) !== canonicalize(at.execution ?? {})) {
+      diffs.push("execution differs");
+    }
+    if (canonicalize(et._meta ?? {}) !== canonicalize(at._meta ?? {})) {
+      diffs.push("_meta differs");
     }
     if (diffs.length > 0) {
       changed.push({ name, differences: diffs });
@@ -118,7 +133,7 @@ export function assertNoBreakingChanges(
       );
     }
 
-    // Check-level regressions — F4 fix Round 2: pass→warn now also surfaces
+    // Check-level regressions - F4 fix Round 2: pass to warn now also surfaces
     const baseChecks = new Map(baseSuite.checks.map((c) => [c.id, c]));
     for (const cur2 of cur.checks) {
       const base = baseChecks.get(cur2.id);
