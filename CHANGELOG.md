@@ -3,6 +3,28 @@
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- **`fast-uri` override corrected to `^3.1.7`.** It stood at `>=3.1.2`, an open
+  lower bound that permitted exactly the versions four advisories were about
+  (GHSA-5jgf-p345-68v8, GHSA-f65p-4m7j-42xc, GHSA-fph4-wmhf-6fwf,
+  GHSA-jqff-g426-hqxp). The installed version was in the vulnerable range.
+
+  The second effect was the more expensive one: Dependabot does not touch an
+  override, so it could not open a PR here at all while twenty other
+  repositories got theirs. A repository without a Dependabot PR can be worse
+  off than one with.
+
+  Measured before setting the new bound: across all 25 lockfiles in this
+  organisation, `fast-uri` is requested by `ajv` and nothing else, with
+  `^3.0.1`. `^3.1.7` is patched and stays inside that range, which the proposed
+  jump to 4.1.4 would have left. Verified at runtime afterwards, not just in
+  the lockfile: `ajv` resolves to 3.1.7, `parse()` runs.
+
+- **`qs` raised to 6.16.0** in the same commit (GHSA-x5fp-wj9c-mxmx).
+
 ## [0.2.1] — 2026-06-21
 
 ### Fixed
