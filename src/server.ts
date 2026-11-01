@@ -27,7 +27,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { z } from "zod";
 import {
   RunJsonRpcComplianceArgs,
   RunSpecVersionAssertionArgs,
@@ -251,9 +251,9 @@ export function createConformanceServer(): Server {
     tools: TOOL_DESCRIPTORS.map((t) => ({
       name: t.name,
       description: t.description,
-      inputSchema: zodToJsonSchema(t.schema, {
-        target: "jsonSchema7",
-        $refStrategy: "none",
+      inputSchema: z.toJSONSchema(t.schema, {
+        target: "draft-07",
+        io: "input",
       }) as Record<string, unknown>,
       annotations: { ...ANNOTATIONS_READ_ONLY },
     })),

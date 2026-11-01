@@ -35,7 +35,7 @@ export const StdioTargetSchema = z.object({
   kind: z.literal("stdio"),
   cmd: z.string().min(1),
   args: z.array(z.string()).optional(),
-  env: z.record(z.string()).optional(),
+  env: z.record(z.string(), z.string()).optional(),
   cwd: z.string().optional(),
 });
 
@@ -48,13 +48,14 @@ export const HttpTargetSchema = z.object({
     .url()
     .refine(
       (rawUrl) => isAllowedTargetUrl(rawUrl).ok,
-      (rawUrl) => ({
-        message:
-          isAllowedTargetUrl(rawUrl).reason ??
-          "Target URL is not allowed by SSRF policy",
-      }),
+      {
+        error: (issue) =>
+          typeof issue.input === "string"
+            ? isAllowedTargetUrl(issue.input).reason ?? "Target URL is not allowed by SSRF policy"
+            : "Target URL is not allowed by SSRF policy",
+      },
     ),
-  headers: z.record(z.string()).optional(),
+  headers: z.record(z.string(), z.string()).optional(),
 });
 
 export const ServerTargetSchema = z.discriminatedUnion("kind", [
@@ -108,7 +109,7 @@ export const ToolDescriptorSchema = z.object({
   // 2025-11-25: execution-related properties.
   execution: z.unknown().optional(),
   // 2025-11-25: arbitrary tool metadata.
-  _meta: z.record(z.unknown()).optional(),
+  _meta: z.record(z.string(), z.unknown()).optional(),
   annotations: z
     .object({
       readOnlyHint: z.boolean().optional(),
@@ -265,7 +266,7 @@ export type RunCapabilityIntrospectionArgs = z.infer<
 
 export const RunRoundtripSmokeArgs = z.object({
   target: ServerTargetSchema,
-  sampleArgs: z.record(z.unknown()).optional(),
+  sampleArgs: z.record(z.string(), z.unknown()).optional(),
   specVersion: SpecVersionSchema.default("2025-06-18"),
 });
 export type RunRoundtripSmokeArgs = z.infer<typeof RunRoundtripSmokeArgs>;
@@ -292,7 +293,7 @@ export const RunFullSuiteArgs = z.object({
 export type RunFullSuiteArgs = z.infer<typeof RunFullSuiteArgs>;
 
 export const GenerateReportArgs = z.object({
-  report: z.unknown(), // FullReport — typed at use-site
+  report: z.unknown().optional(), // FullReport — typed at use-site
   format: z.enum(["junit", "json", "terminal"]),
 });
 export type GenerateReportArgs = z.infer<typeof GenerateReportArgs>;
@@ -304,8 +305,8 @@ export const CompareManifestsArgs = z.object({
 export type CompareManifestsArgs = z.infer<typeof CompareManifestsArgs>;
 
 export const AssertNoBreakingChangesArgs = z.object({
-  baseline: z.unknown(), // FullReport
-  current: z.unknown(), // FullReport
+  baseline: z.unknown().optional(), // FullReport
+  current: z.unknown().optional(), // FullReport
 });
 export type AssertNoBreakingChangesArgs = z.infer<
   typeof AssertNoBreakingChangesArgs
