@@ -3,12 +3,12 @@
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.2] - 2026-11-01
 
 
 ### Dependency maintenance
 
-- Prepare patch release 0.2.2 with matching package and registry descriptor versions.
+- Align package and registry descriptor versions at 0.2.2.
 - Migrate to Zod4.6.7 and supported draft-07 input-schema conversion; remove zod-to-json-schema. Preserve optional default/unknown fields and update record/error callback forms. Raise the fast-uri override floor to ^3.1.9.
 - The checked local suite passes 126 tests and the real stdio transport exposes 12 populated tool schemas. All-dependency and production audits report zero findings.
 
